@@ -15,35 +15,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         name: Checkout 🛎️
-      - uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            ./last-build
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-      - run: |
-          cp -rf $GITHUB_WORKSPACE/src ./last-build/src || true
-          cp -rf $GITHUB_WORKSPACE/Cargo.* ./last-build/Cargo.* || true
-          cp -rf /last-build/* . || true
-      - uses: actions-rs/toolchain@v1
-        name: Setup Cargo Toolchain 🛎️
-        with:
-          components: rustfmt, clippy
-          toolchain: nightly
-          default: true
-      - uses: actions-rs/cargo@v1
-        name: Check Code Format 🔧
-        with:
-          command: fmt
-          args: -- --check
-      - uses: actions-rs/cargo@v1
-        name: Running Tests 🚀
-        with:
-          command: test
-          args: --all-features --workspace
-      - run: |
-          rm -rf ./last-build || true
-          mkdir ./last-build
-          shopt -s extglob && mv ./!(last-build) ./last-build
-
+      - uses: satackey/action-docker-layer-caching@v0.0.11
+        continue-on-error: true
+      - run: docker build .
