@@ -17,4 +17,8 @@ jobs:
         name: Checkout 🛎️
       - uses: satackey/action-docker-layer-caching@v0.0.11
         continue-on-error: true
+        with:
+          key: mirror-clone-docker-cache-v0-{hash}
+          restore-keys: |
+            mirror-clone-docker-cache-v0-
       - run: docker build .
