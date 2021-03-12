@@ -20,8 +20,12 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-            target
+            ./last-build
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - run: |
+          cp -rf $GITHUB_WORKSPACE/src ./last-build/src || true
+          cp -rf $GITHUB_WORKSPACE/Cargo.* ./last-build/Cargo.* || true
+          cp -rf /last-build/* . || true
       - uses: actions-rs/toolchain@v1
         name: Setup Cargo Toolchain 🛎️
         with:
@@ -38,3 +42,8 @@ jobs:
         with:
           command: test
           args: --all-features --workspace
+      - run: |
+          rm -rf ./last-build || true
+          mkdir ./last-build
+          shopt -s extglob && mv ./!(last-build) ./last-build
+
